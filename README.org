@@ -1,0 +1,39 @@
+* watch-and-run
+
+Watch a dir and run a given command on changes.
+
+** Example
+
+*** File synchronization
+
+I've found a few good use cases for the script so far. One is when your workflow
+is detached, i.e. for some reason you want to edit your files locally, but
+always have them syncronized on a remote server.
+
+For these purposes my goto tool is the venerable =rsync=:
+
+#+BEGIN_SRC sh
+  watch-and-run rsync -Pa --delete ~/some/dir remote.server:/remote/dir
+#+END_SRC
+
+*** Automatic recompilation/re-make
+
+When developing it's quite handy to run a kind of continous integration. While
+continous execution of unit tests inside an IDE is probably preferable, this
+provides a pretty decent alternative.
+
+E.g. when I play around with developing Puppet modules, I might start the
+program with the following command:
+
+#+BEGIN_SRC sh
+  BACKGROUND=1 DIR=~/projects/puppet watch-and-run make ubuntu
+#+END_SRC
+
+In the above we define that we want to
+
++ start the process in the background,
++ watch =~/projects/puppet=
++ run =make ubuntu= on change
+
+For Puppet development this works nicely with [[https://github.com/puppetlabs/puppet-in-docker-examples/tree/master/compose][docker-compose]] from the
+[[https://github.com/puppetlabs/puppet-in-docker-examples][puppet-in-docker-examples]] repo.
