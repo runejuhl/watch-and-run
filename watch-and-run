@@ -39,17 +39,18 @@ function env_is_falsey() {
   [[ "${!1}" =~ [Nn0]|no ]]
 }
 
-function add_if_set() {
+function exclude_if_set() {
   # Add an argument to the array of exclude lines, if the given env is set to
   # anything but the values that disable.
-  env_is_falsey $2 && return
+  env_is_falsey "$1" && return
 
-  declare "$1+=( '$3' )"
+  exclude+=( "$2" )
 }
 
-add_if_set exclude IGNORE_EMACS "--exclude '/.#.+'"      # ignore emacs tmp
-add_if_set exclude IGNORE_GIT "--exclude '^\./\.git/'"   # exclude git itself
-add_if_set exclude IGNORE_VIM '--exclude ~$'             # ignore vim tmp
+BACKGROUND=$(env_is_falsey BACKGROUND || echo \&)
+exclude_if_set IGNORE_EMACS "--exclude '/.#.+'"    # ignore emacs tmp
+exclude_if_set IGNORE_GIT "--exclude '^\./\.git/'" # exclude git itself
+exclude_if_set IGNORE_VIM '--exclude ~$'           # ignore vim tmp
 
 while true; do
 
@@ -66,6 +67,6 @@ while true; do
 
   [[ "$change" =~ ISDIR ]] && continue
 
-  eval "$@"
+  eval "${@}" "${BACKGROUND}"
 
 done
