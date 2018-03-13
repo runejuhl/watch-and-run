@@ -1,0 +1,34 @@
+#!/bin/bash -x
+
+declare -ag exclude=()
+
+function add_if_set() {
+  [[ "${!2}" =~ [Nn0]|no ]] && return
+
+  echo "${!1}"
+  declare "$1+=( '$3' )"
+  echo "${!1}"
+}
+
+add_if_set exclude IGNORE_EMACS "--exclude '/.#.+'"      # ignore emacs tmp
+add_if_set exclude IGNORE_GIT "--exclude '^\./\.git/'"   # exclude git itself
+add_if_set exclude IGNORE_VIM '--exclude ~$'             # ignore vim tmp
+
+while true; do
+
+  change=$(eval inotifywait \
+                --recursive            \
+                --exclude '^\.$'       \
+                --event attrib         \
+                --event create         \
+                --event modify         \
+                --event delete         \
+                --quiet                \
+                "${exclude[*]}"        \
+                       .)
+
+  [[ "$change" =~ ISDIR ]] && continue
+
+  eval "$@"
+
+done
