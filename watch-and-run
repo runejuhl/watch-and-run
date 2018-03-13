@@ -1,13 +1,50 @@
-#!/bin/bash -x
+#!/bin/bash
+#
+# Run a command upon any change to files in a given directory
+#
+# author: Rune Juhl Jacobsen
+# license: GPL-3.0
+
+usage() {
+  cat <<EOF
+Usage: $0
+
+Use the following environment variables for control:
+
+- BACKGROUND
+  Execute the command in the background
+- DIR
+  Set the directory to watch, defaults to \$(pwd)
+- IGNORE_EMACS
+  Ignore emacs temp files
+- IGNORE_GIT
+  Ignore changes in the git directory
+- IGNORE_VIM
+  Ignore vim swp files
+
+Any value except \`[Nn0]|no\` enables a given setting.
+EOF
+}
+
+if [[ $1 =~ -h|--help|help ]]; then
+  usage
+  exit 0
+fi
+
 
 declare -ag exclude=()
+DIR="${DIR:-$(pwd)}"
+
+function env_is_falsey() {
+  [[ "${!1}" =~ [Nn0]|no ]]
+}
 
 function add_if_set() {
-  [[ "${!2}" =~ [Nn0]|no ]] && return
+  # Add an argument to the array of exclude lines, if the given env is set to
+  # anything but the values that disable.
+  env_is_falsey $2 && return
 
-  echo "${!1}"
   declare "$1+=( '$3' )"
-  echo "${!1}"
 }
 
 add_if_set exclude IGNORE_EMACS "--exclude '/.#.+'"      # ignore emacs tmp
@@ -25,7 +62,7 @@ while true; do
                 --event delete         \
                 --quiet                \
                 "${exclude[*]}"        \
-                       .)
+                "${DIR}")
 
   [[ "$change" =~ ISDIR ]] && continue
 
