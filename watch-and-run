@@ -11,15 +11,15 @@ Usage: $0
 
 Use the following environment variables for control:
 
-- BACKGROUND
+- BACKGROUND=n
   Execute the command in the background
-- DIR
-  Set the directory to watch, defaults to \$(pwd)
-- IGNORE_EMACS
+- DIR=\$(pwd)
+  Set the directory to watch
+- IGNORE_EMACS=y
   Ignore emacs temp files
-- IGNORE_GIT
+- IGNORE_GIT=y
   Ignore changes in the git directory
-- IGNORE_VIM
+- IGNORE_VIM=y
   Ignore vim swp files
 
 Any value except \`[Nn0]|no\` enables a given setting.
