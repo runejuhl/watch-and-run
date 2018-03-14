@@ -13,6 +13,8 @@ Use the following environment variables for control:
 
 - BACKGROUND=n
   Execute the command in the background
+- DEBUG=n
+  Output inotify messages
 - DIR=\$(pwd)
   Set the directory to watch
 - IGNORE_EMACS=y
@@ -33,6 +35,7 @@ fi
 
 declare -ag exclude=()
 BACKGROUND="${BACKGROUND:-n}"
+DEBUG="${DEBUG:-n}"
 DIR="${DIR:-$(pwd)}"
 
 function env_is_falsey() {
@@ -64,6 +67,8 @@ while true; do
                 --quiet                \
                 "${exclude[*]}"        \
                 "${DIR}")
+
+  env_is_falsey DEBUG || >&2 echo "${change}"
 
   [[ "$change" =~ ISDIR ]] && continue
 
