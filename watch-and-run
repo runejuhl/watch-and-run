@@ -31,8 +31,8 @@ if [[ $1 =~ -h|--help|help ]]; then
   exit 0
 fi
 
-
 declare -ag exclude=()
+BACKGROUND="${BACKGROUND:-n}"
 DIR="${DIR:-$(pwd)}"
 
 function env_is_falsey() {
@@ -47,8 +47,8 @@ function exclude_if_set() {
   exclude+=( "$2" )
 }
 
-BACKGROUND=$(env_is_falsey BACKGROUND || echo \&)
 exclude_if_set IGNORE_EMACS "--exclude '/.#.+'"    # ignore emacs tmp
+BACKGROUND=$( env_is_falsey BACKGROUND || echo \&)
 exclude_if_set IGNORE_GIT "--exclude '^\./\.git/'" # exclude git itself
 exclude_if_set IGNORE_VIM '--exclude ~$'           # ignore vim tmp
 
